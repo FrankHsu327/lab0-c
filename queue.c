@@ -66,12 +66,16 @@ bool q_insert_head(queue_t *q, char *s)
     }
     strncpy(new_s, s, (strlen(s) + 1));
 
-    /* Assign new head to the queue*/
+    /* Assign value */
     newh->value = new_s;
     newh->next = q->head;
+
+    /* Modify the queue*/
     q->head = newh;
     if (!q->tail)
         q->tail = q->head;
+    q->size += 1;
+
     return true;
 }
 
@@ -84,11 +88,40 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    /* TODO: You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
     list_ele_t *newt;
+    char *new_s;
+
+    /* If q is NULL, return false */
+    if (!q)
+        return false;
+
     newt = malloc(sizeof(list_ele_t));
-    q->tail = newt;
+    if (!newt)
+        return false;
+
+    /* Allocate space for string and copy s to it */
+    new_s = malloc((strlen(s) + 1) * sizeof(char));  // +1 is for the terminator
+    if (!new_s) {
+        free(newt);
+        return false;
+    }
+    strncpy(new_s, s, (strlen(s) + 1));
+
+    /* Assign value */
+    newt->value = new_s;
+    newt->next = NULL;
+
+    /* Modify queue */
+    if (!q->tail) {
+        q->head = newt;
+        q->tail = newt;
+    } else {
+        q->tail->next = newt;
+        q->tail = newt;
+    }
+    q->size += 1;
+
     return true;
 }
 
@@ -102,8 +135,28 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* TODO: You need to fix up this code. */
-    /* TODO: Remove the above comment when you are about to implement. */
+    list_ele_t *tmp;
+    /* Check eligibility of q */
+    if (!q || !q->head)
+        return false;
+
+    /* copy removed string to sp if sp is not NULL*/
+    if (sp) {
+        size_t len = strlen(q->head->value) + 1;
+
+        /* Compare bufsize to len */
+        len = bufsize < len ? bufsize : len;
+
+        strncpy(sp, q->head->value, len - 1);
+        sp[len - 1] = '\0';
+    }
+
+    tmp = q->head;
+    q->head = q->head->next;
+    free(tmp->value);
+    free(tmp);
+    q->size -= 1;
+
     return true;
 }
 
@@ -113,10 +166,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
-    return q->size;
+    return q ? q->size : 0;
 }
 
 /*
@@ -128,8 +178,24 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    list_ele_t *curr, *next;
+
+    /* Check eligibility of q */
+    if (!q || !q->head)
+        return;
+
+    curr = q->head->next;
+    q->tail = q->head;
+    q->tail->next = NULL;
+    q->head = curr;
+    next = q->tail;
+
+    while (curr) {
+        q->head->next = next;
+        next = q->head;
+        q->head = curr;
+        curr = curr->next;
+    }
 }
 
 /*
