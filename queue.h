@@ -35,7 +35,7 @@ typedef struct {
  * Create empty queue.
  * Return NULL if could not allocate space.
  */
-queue_t *q_new();
+extern queue_t *q_new();
 
 /*
  * Free ALL storage used by queue.

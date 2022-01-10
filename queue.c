@@ -200,6 +200,54 @@ void q_reverse(queue_t *q)
 // {
 //     return;
 // }
+static list_ele_t *q_split(list_ele_t *walk, size_t step)
+{
+    list_ele_t *remain;
+    while (--step)
+        walk = walk->next;
+    remain = walk->next;
+    walk->next = NULL;
+    return remain;
+}
+
+static list_ele_t *q_merge_sorted_list(list_ele_t **head,
+                                       list_ele_t *first,
+                                       list_ele_t *second)
+{
+    while (first && second) {
+        if (strcasecmp(first->value, second->value) < 0) {
+            *head = first;
+            first = first->next;
+        } else {
+            *head = second;
+            second = second->next;
+        }
+        head = &(*head)->next;
+    }
+    if (first)
+        *head = first;
+    else
+        *head = second;
+
+    while ((*head)->next)
+        head = &(*head)->next;
+    return *head;
+}
+
+static list_ele_t *merge_sort(list_ele_t **head, size_t size)
+{
+    list_ele_t *mid;
+    size_t ll, rl;
+    if (size < 2)
+        return *head;
+    rl = size / 2;
+    ll = size - rl;
+
+    mid = q_split(*head, ll);
+    merge_sort(head, ll);
+    merge_sort(&mid, rl);
+    return q_merge_sorted_list(head, *head, mid);
+}
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
@@ -207,6 +255,11 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    if (q)
+    /* If q is NULL or q->head is NULL or q->head->next is NULL,
+     * means size is 0 or 1.
+     * No need for sort
+     */
+    if (!q || !q->head || !q->head->next)
         return;
+    q->tail = merge_sort(&q->head, q->size);
 }
