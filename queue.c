@@ -184,20 +184,22 @@ void q_reverse(queue_t *q)
     if (!q || !q->head)
         return;
 
-    curr = q->head->next;
     q->tail = q->head;
-    q->tail->next = NULL;
-    q->head = curr;
-    next = q->tail;
+    curr = q->head;
+    q->head = NULL;
 
     while (curr) {
-        q->head->next = next;
-        next = q->head;
+        next = curr->next;
+        curr->next = q->head;
         q->head = curr;
-        curr = curr->next;
+        curr = next;
     }
 }
 
+// static list_ele_t *q_divide(queue_t *q)
+// {
+//     return;
+// }
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
@@ -205,6 +207,6 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (q)
+        return;
 }
