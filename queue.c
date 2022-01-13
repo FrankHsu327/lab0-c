@@ -196,10 +196,6 @@ void q_reverse(queue_t *q)
     }
 }
 
-// static list_ele_t *q_divide(queue_t *q)
-// {
-//     return;
-// }
 static list_ele_t *q_split(list_ele_t *walk, size_t step)
 {
     list_ele_t *remain;
@@ -255,11 +251,7 @@ static list_ele_t *merge_sort(list_ele_t **head, size_t size)
  */
 void q_sort(queue_t *q)
 {
-    /* If q is NULL or q->head is NULL or q->head->next is NULL,
-     * means size is 0 or 1.
-     * No need for sort
-     */
-    if (!q || !q->head || !q->head->next)
+    if (!q)
         return;
     q->tail = merge_sort(&q->head, q->size);
 }
